@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>userlist</title>
+    <link rel="stylesheet" href="/dark.css" id="css_mode">
+    <script src="/library/index.js"></script>
+    <link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/default.min.css">
+      <link rel="stylesheet" href="https://highlightjs.org/static/demo/styles/base16/atelier-estuary.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
+</head>
+<body onload="load()">
+    <%- include('header.ejs', {user: u}) %>
+    <% if(role == "admin") {%> 
+    <div class="content">
+    <input type="text" name="exec" id="exec">
+    <a href="javascript:exec()" class="primary">execute</a>
+    <pre><code class="out language-json" style="overflow-wrap: break-word;white-space: break-spaces;/*display: flex !important;flex-direction: row;flex-wrap: wrap;*/"></code></pre>
+    <h1>raw</h1>
+    <pre><code class="out1 language-json" style="overflow-wrap: break-word;white-space: break-spaces;/*display: flex !important;flex-direction: row;flex-wrap: wrap;*/"></code></pre>
+</div>
+    <script>
+        async function exec() {
+            a = await fetch(location.origin + "/api/exec/" + $("#exec").text.replace("/", "%2F").replace("?", "%3F").replace("#", "%23"));
+            json = await a.json();
+            console.log(json)
+            console.log(JSON.parse(json.res));
+            $(".out").element.textContent = json.res
+            $(".out1").element.textContent = JSON.stringify(json);
+            hljs.highlightAll();
+        }
+    </script>
+    <% } %> 
+    <style>
+        .content {
+            margin: 30px;
+        }
+    </style>
+    <%- include('footer.ejs', {user: u}) %>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="index.js"></script>
+    <script>
+        apply("fishingcom.serv.gs")
+        setInterval(apply, 10000, "fishingcom.serv.gs")
+        function apply(serverip) {
+            fetch("https://mcapi.us/server/status?ip=" + serverip).then(response => response.json()).then(data => {
+              document.getElementById("Players").innerHTML = data.players.max.toString() + "/" + data.players.now.toString();
+              if(data.players.hasOwnProperty("sample")) {
+                document.getElementById("Players").innerHTML = data.players.sample.join("<br>")
+              }
+            }).catch(error => {console.log(error);});
+        }
+    </script>
+</head>
+<body style="background-color: #212529; color: white;">
+    <h1>Serverpage</h1>
+    <h1>Players:</h1>
+    <h2 id="Players">0 / 10</h2><br>
+    <h2 id="list"></h2>
+</body>
+</html>

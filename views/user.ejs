@@ -1,0 +1,72 @@
+<% 
+//functions
+function getBots() {
+    str = "";
+    bots.forEach(el => {
+        try {
+        str += "<a href=\"/bot/" + el.id + "/\">" + el.name + "</a>, ";
+        }
+        catch{
+            
+        }
+    })
+    str = str.substring(0, str.length - 2);
+    return str;
+}
+%>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>userlist</title>
+    <link rel="stylesheet" href="/dark.css" id="css_mode">
+    <script src="/library/index.js"></script>
+</head>
+<body onload="load()">
+    <% function getTags() {
+        tags = "";
+        user.tags.forEach(el => {
+            tags += "<a href=\"/search?q=" + el.replaceAll("\"", "&quot;") + "\">" + el + "</a>, ";
+        })
+        tags = tags.substring(0, tags.length - 2);
+        return tags;
+    } %>
+    <%- include('header.ejs', {user: u}) %>
+    <div class="content">
+        <h1 class="name"><img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.webp?size=32" alt="avatar" class="big-avatar"><%= user.name %></h1>
+        <div class="card"><h3><%= user.bio %></h3></div>
+        <h4>Bots: <%- getBots() %></h4>
+        <div class="badges">
+            <h2>Badges: </h2>
+        <% user.badges.forEach(el => { %>
+            <img src="<%= el.src %>" alt="<%= el.name %>" class="badge" id="<%= el.name %>">
+        <% }); %>
+        </div>
+    </div>
+    <style>
+        .badges {
+            display: flex;
+            flex-direction: row;
+            padding-left: 10px;
+        }
+        .badge {
+            border: 0px solid rgba(0,0,0,0);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            transform: translateY(20px);
+        }
+
+        .content {
+            margin: 20px;
+            border: 1px solid orangered;
+            border-radius: 12px;
+            padding: 15px;
+        }
+    </style>
+    <%- include('footer.ejs', {user: u}) %>
+</body>
+</html>

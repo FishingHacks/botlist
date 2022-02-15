@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Botlist</title>
+    <link rel="stylesheet" href="/dark.css" id="css_mode">
+    <script src="/library/index.js"></script>
+</head>
+<body onload="load()">
+    <% function getTags() {
+        tags = "";
+        bot.tags.forEach(el => {
+            tags += "<a href=\"/search?q=" + el.replaceAll("\"", "&quot;") + "\">" + el + "</a>, ";
+        })
+        tags = tags.substring(0, tags.length - 2);
+        return tags;
+    } %>
+    <%- include('header.ejs', {user: u}) %>
+    <div class="content">
+        <div class="votes"><h1>Votes: <%= bot.votes %>   </h1><div class="spacermid"></div><a onclick="vote()" class="primary _primary">Vote</a></div>
+        <div class="links">
+            <a href="<%= bot.website %>" class="primary">Website</a>
+            <a href="<%= bot.invite %>" class="primary">Invite <%= bot.name %></a>
+            <a href="<%= bot.discordServer %>" class="primary">Support Server</a>
+            <h4>Prefix: <%= bot.prefix %></h4>
+            <h4>Tags: <%- getTags() %></h4>
+            <h4>Author: <a href="/user/<%= owner.id %>"><%= owner.name %></a></h4>
+        </div>
+        <h1 class="name"><img src="<%= bot.avatar %>" class="big-avatar"/><%= bot.name %></h1>
+        <div class="card"><h3><%= bot.headline %></h3></div>
+        <div class="spacer"></div>
+        <div class="card"><h3><%= bot.description %></h3></div>
+        <% if(bot.ownerID == u.id) { %>
+            <a href="/bot/<%= bot.id %>/edit" class="primary __primary">edit bot</a>
+        <% } %>
+    </div>
+    <style>
+        .primary {
+            cursor: pointer;
+        }
+
+        .votes {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .spacermid {
+            margin-left: 50px;
+        }
+
+        ._primary {
+            height: 20px;
+            transform: translateY(20px);
+        }
+
+        ._primary:hover {
+            transform: translateY(19px);
+        }
+
+        ._primary:active {
+            transform: translateY(18px);
+        }
+
+        .__primary {
+            height: 20px;
+            transform: translateY(5px);
+        }
+
+        .__primary:hover {
+            transform: translateY(4px);
+        }
+
+        .__primary:active {
+            transform: translateY(3px);
+        }
+
+        .spacer {
+            margin: 10px;    
+        }
+
+        .content {
+            margin: 20px;
+            border: 1px solid orangered;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .card {
+            margin: 3px;
+            margin-right: 20px;
+            box-shadow: 4px 4px 4px 3px rgba(0, 0, 0, 0.2);
+            border: 0px solid black;
+            border-radius: 12px;
+            padding: 1px;
+            padding-left: 5px;
+            background-color: rgba(18, 18, 75, 0.199);
+        }
+    </style>
+    <script>
+        async function vote() {
+            fetch(location.origin + "/bot/<%= bot.id %>/vote");
+            location.reload();
+        }
+    </script>
+    <%- include('footer.ejs', {user: u}) %>
+</body>
+</html>

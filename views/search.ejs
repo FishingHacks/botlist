@@ -1,0 +1,55 @@
+<%function makeBold(str, sstr) {return str.replaceAll(sstr, "<b>"+sstr+"</b>")}%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Botlist</title>
+    <link rel="stylesheet" href="/dark.css" id="css_mode">
+    <script src="/library/index.js"></script>
+    <script>
+        function gotoBot(id) {
+            location.href=location.origin+"/bot/"+id;
+        }
+    </script>
+    <style>
+        .bot {
+            cursor: pointer;
+            margin: 5px;
+            border: 1px solid orangered;
+            border-radius: 12px;
+            padding: 4px;
+            margin-left: 30px;
+            margin-right: 30px;
+            transition: transform .1s;
+        }
+
+        .bot:hover {
+            transform: scale(1.01);
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        .bot>* {
+            margin: 0;
+            padding: 0;
+            font-size: medium;
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body onload="load()">
+    <%- include('header.ejs', {user: u}) %>
+    <div class="content">
+        <% bots.forEach(element => { if(element.isReviewed) { %>
+            <div class="bot" onclick="gotoBot('<%= element.id %>')">
+            <a href="/bot/<%= element.id%>"><img src="<%= element.avatar %>" class="big-avatar"/><%- makeBold(element.name, q) %></a>
+            <p style="font-size: small;"><%- makeBold(element.headline, q); %></p>
+            <p>Tags: <%- makeBold(element.tags.join(", "), q) %></p>
+        </div>
+       <% }}); %>
+    </div>
+    <%- include('footer.ejs', {user: u}) %>
+</body>
+</html>
