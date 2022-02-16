@@ -39,7 +39,7 @@
         }
     </style>
 </head>
-<body onload="load()">
+<body onload="load()" style="width: 100vw; height: 100vh; position: absolute;">
     <%- include('header.ejs', {user: u}) %>
     <div class="content">
         <% bots.forEach(element => { if(element.isReviewed) { %>

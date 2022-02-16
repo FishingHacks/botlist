@@ -173,7 +173,15 @@ app.get("/", (req, res) => {
   user = db.get("user");
   tokens = db.get("tokens");
   u = user[tokens[getcookie(cookies, "token")]?.id];
-  res.render("index.ejs", { u });
+  let _bots = db.get("bots");
+  let bots = [];
+  for(_bot in _bots) {
+    let __bot = _bots[_bot];
+    __bot.id = _bot;
+    bots.push(__bot);
+  }
+  bots.sort((el1, el2) => el2.votes-el1.votes);
+  res.render("index.ejs", { u, bots });
 });
 
 app.get("/logout", (req, res) => {
