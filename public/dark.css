@@ -144,8 +144,8 @@ h6 {
   overflow: hidden;
   border: solid 0px green;
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   transform: translateY(3px);
 }
 
