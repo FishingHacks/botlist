@@ -11,6 +11,10 @@
         function _load() {
             const tags=purify("Tags: <%- getTags().replaceAll('"', '\\"') %>");
             document.getElementsByClassName("tags")[0].innerHTML=tags;
+            const description = purify("<%- bot.description %>")
+            const headline = purify("<%- bot.headline %>")
+            document.getElementsByClassName("description")[0].innerHTML=description;
+            document.getElementsByClassName("headline")[0].innerHTML=headline;
         }
     </script>
 </head>
@@ -36,9 +40,9 @@
             <% }); %></a></h4>
         </div>
         <h1 class="name"><img src="<%= bot.avatar %>" class="big-avatar"/><%= bot.name %></h1>
-        <div class="card"><h3><%= bot.headline %></h3></div>
+        <div class="card"><h3 class="headline"></h3></div>
         <div class="spacer"></div>
-        <div class="card"><h3><%= bot.description %></h3></div>
+        <div class="card"><h3 class="description"></h3></div>
         <% if(bot.ownerID == u?.id) { %>
             <a href="/bot/<%= bot.id %>/edit" class="primary __primary">edit bot</a>
             <a href="/bot/<%= bot.id %>/delete" class="danger __primary">Delete bot</a>

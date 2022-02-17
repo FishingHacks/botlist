@@ -7,37 +7,55 @@
     <title>userlist</title>
     <link rel="stylesheet" href="/dark.css" id="css_mode">
     <script src="/library/index.js"></script>
+    <script>
+    function _load() {
+        let desc = purify("<%- bot.description.replaceAll('\r', '').replaceAll('\n', '') %>");
+        let head = purify("<%- bot.headline.replaceAll('\r', '').replaceAll('\n', '') %>");
+        document.getElementById("description").innerHTML=desc.replaceAll("<br />", "\n").replaceAll("<br>", "\n");
+        document.getElementById("headline").innerHTML=head.replaceAll("<br />", "\n").replaceAll("<br>", "\n");
+    }
+    </script>
+    <style>
+        .edit-form>input, .edit-form>textarea {
+            padding: 5px;
+            border: 1px var(--textcol) solid;
+            background-color: rgba(0, 0, 0, 0);
+            color: #00b4cc;
+            border-radius: 3px;
+            margin-bottom: 3px;
+        }
+    </style>
 </head>
 <body onload="load()" style="width: 100vw; height: 100vh; position: absolute;">
     <%- include('header.ejs', {user: u}) %>
     <div class="content">
-        <form action="/bot/<%= bot.id %>/edit_submit" method="get" style="color: var(--textcol); margin-top: 30px; margin-left: 30px;">
+        <form class="edit-form" action="/bot/<%= bot.id %>/edit_submit" method="get" style="color: var(--textcol); margin-top: 30px; margin-left: 5px;">
             <label for="name">Name: </label>
-            <input type="text" name="name" id="name" required value="<%= bot.name %>">
+            <input type="text" name="name" id="name" required value="<%= bot.name %>" style="width: 97vw;">
             <br />
             <label for="headline">Headline: </label>
-            <input type="text" name="headline" id="headline" required value="<%= bot.headline %>">
+            <textarea name="headline" id="headline" required style="width: 97vw; height: 100px;"></textarea>
             <br />
             <label for="description">Description: </label>
-            <input type="text" name="description" id="description" required value="<%= bot.description %>">
+            <textarea name="description" id="description" required style="width: 97vw; height: 100px;"></textarea>
             <br />
             <label for="website">Website: </label>
-            <input type="tel" name="website" id="website" required value="<%= bot.website %>">
+            <input type="tel" name="website" id="website" required value="<%= bot.website %>" style="width: 97vw;">
             <br />
             <label for="invite">Bot-Invite: </label>
-            <input type="text" name="invite" id="invite" required value="<%= bot.invite %>">
+            <input type="text" name="invite" id="invite" required value="<%= bot.invite %>" style="width: 97vw;">
             <br />
             <label for="discordServer">Support Server: </label>
-            <input type="text" name="discordServer" id="discordServer" required value="<%= bot.discordServer %>">
+            <input type="text" name="discordServer" id="discordServer" required value="<%= bot.discordServer %>" style="width: 97vw;">
             <br />
             <label for="prefix">Prefix: </label>
-            <input type="text" name="prefix" id="prefix" required value="<%= bot.prefix %>">
+            <input type="text" name="prefix" id="prefix" required value="<%= bot.prefix %>" style="width: 97vw;">
             <br />
             <label for="avatar">Avatar-Link</label>
-            <input type="text" name="avatar" id="avatar" required value="<%= bot.avatar %>">
+            <input type="text" name="avatar" id="avatar" required value="<%= bot.avatar %>" style="width: 97vw;">
             <br />
             <label for="tags">Tags (Comma between the tags): </label>
-            <input type="text" name="tags" id="tags"  required value="<%= bot.tags.join(",") %>">
+            <input type="text" name="tags" id="tags"  required value="<%= bot.tags.join(",") %>" style="width: 97vw;">
             <br />
             <br />
             <button type="submit" class="primary">Submit</button>

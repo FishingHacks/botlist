@@ -159,7 +159,7 @@ app.get("/login/:accessToken/:tokenType", (req, res) => {
       while (db.has("tokens", token)) {
         token = getRandomUUID(40);
       }
-      console.log(token);
+      // console.log(token);
       db.set("tokens", { id: id, username: uname }, token);
       res.cookie("token", token);
       //res.send("");
@@ -225,9 +225,12 @@ app.get("/bot/:id/edit_submit", (req, res) => {
   if(!bot) return res.redirect("/");
   if(bot.ownerID != u.id) return res.redirect("/bot/"+req.params.id);
   params = req.query;
+  console.log(req.query)
   let _bot = botobj.fromJSON(bot);
-  const {name, headline, description, website, invite, discordServer, prefix, avatar, tags} = req.query;
+  let {name, headline, description, website, invite, discordServer, prefix, avatar, tags} = req.query;
   if(name && headline && description && website && invite && discordServer && prefix && avatar && tags/* && discordServer.startsWith("https://discord.gg/")*/) {
+    headline=headline.replaceAll("\n", "<br />").replaceAll("\r", "");
+    description=description.replaceAll("\n", "<br />").replaceAll("\r", "");
     _bot.name=name;
     _bot.headline=headline;
     _bot.description=description;
@@ -270,7 +273,7 @@ app.get("/bot/:id", (req, res) => {
       return res.redirect("/");
     }
     let owner = db.get("user", bot.ownerID);
-    console.log(bot);
+    // console.log(bot);
     if (!bot.isReviewed && !db.has("staff", u.id)) return res.redirect("/");
     return res.render("bot.ejs", { u: u, bot: bot, owner: owner });
   }
@@ -297,7 +300,7 @@ app.get("/user/edit_submit", (req, res) => {
   let {bio} = req.query;
   if(!bio) return res.redirect("/user/"+u.id);
   bio=bio.replaceAll("\n", "<br />").replaceAll('"', '\\\"');
-  console.log(bio)
+  // console.log(bio)
   u.bio=bio;
   db.set("user", u, u.id);
   return res.redirect("/user/"+u.id);
@@ -324,7 +327,7 @@ app.get("/user/:id", (req, res) => {
 
 app.put("/bots/add/:id", (req, res) => {
   if(!req.query.token) return res.status(403).json({ error: "Not logged in" });
-  console.log(req.body);
+  // console.log(req.body);
   if (!db.has("tokens", req.query.token)) {
     return res.status(403).json({ error: "Not logged in" });
   }
@@ -341,20 +344,20 @@ app.put("/bots/add/:id", (req, res) => {
   } else {
     let bot = new botobj.bot(
       b.name,
-      b.description,
+      b.description.replaceAll("\n", "<br />").replaceAll("\r", ""),
       req.params.id,
       b.website,
       0,
       b.invite,
       ownerID,
-      b.headline,
+      b.headline.replaceAll("\n", "<br />").replaceAll("\r", ""),
       b.tags,
       b.prefix,
       b.discordServer,
       b.avatar
     );
     db.set("bots", bot.toJSON(), req.params.id);
-    console.log(bot.toJSON());
+    // console.log(bot.toJSON());
     return res.status(200).json({ success: "Bot successfuly created" });
   }
 });
