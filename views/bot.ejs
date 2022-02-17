@@ -43,10 +43,11 @@
         <div class="card"><h3 class="headline"></h3></div>
         <div class="spacer"></div>
         <div class="card"><h3 class="description"></h3></div>
-        <% if(bot.ownerID == u?.id) { %>
+        <% if(bot.ownerID == u?.id || isStaff) { %>
             <a href="/bot/<%= bot.id %>/edit" class="primary __primary">edit bot</a>
             <a href="/bot/<%= bot.id %>/delete" class="danger __primary">Delete bot</a>
         <% } %>
+        <% if(!bot.isReviewed) { %> <a href="/review/<%= bot.id %>" class="primary __primary">Review</a> <% } %>
     </div>
     <style>
         .primary {

@@ -8,7 +8,7 @@ const app = express();
 const api = express();
 const { fetch } = require("cross-fetch");
 var bodyParser = require("body-parser");
-const { type } = require("express/lib/response");
+const { type, redirect } = require("express/lib/response");
 const utils = require("./utils");
 const res = require("express/lib/response");
 const { bot } = require("./IBot");
@@ -184,6 +184,15 @@ app.get("/", (req, res) => {
   res.render("index.ejs", { u, bots });
 });
 
+app.get("/add", (req, res) => {
+  cookies = getcookies(req);
+  let u = undefined;
+  user = db.get("user");
+  tokens = db.get("tokens");
+  u = user[tokens[getcookie(cookies, "token")]?.id];
+  res.render("bot-submit.ejs", { u });
+});
+
 app.get("/logout", (req, res) => {
   db.delete(getcookie(getcookies(req), "token"));
   res.clearCookie("token");
@@ -210,7 +219,7 @@ app.get("/bot/:id/delete", (req, res) => {
   u = user[tokens[getcookie(cookies, "token")]?.id];
   let bot = db.get("bots", req.params.id);
   if(!bot) return res.redirect("/");
-  if(bot.ownerID != u?.id) return res.redirect("/bot/"+req.params.id);
+  if(bot.ownerID != u?.id && !db.has("staff", u?.id)) return res.redirect("/bot/"+req.params.id);
   db.delete("bots", req.params.id);
   res.redirect("/");
 });
@@ -251,6 +260,7 @@ app.get("/bot/:id", (req, res) => {
   user = db.get("user");
   tokens = db.get("tokens");
   u = user[tokens[getcookie(cookies, "token")]?.id];
+  let isStaff = Boolean(db.has("staff", u.id));
   if (db.has("vurls", req.params.id)) {
     try {
       let bot = botobj.fromJSON(db.get("bots", db.get("vurls", req.params.id)));
@@ -260,8 +270,8 @@ app.get("/bot/:id", (req, res) => {
         return res.redirect("/");
       }
       let owner = db.get("user", bot.ownerID);
-      if (!bot.isReviewed && !db.has("staff", u.id)) return res.redirect("/");
-      return res.render("bot.ejs", { u: u, bot: bot, owner: owner });
+      if (!bot.isReviewed && !isStaff) return res.redirect("/");
+      return res.render("bot.ejs", { u: u, bot: bot, owner: owner, isStaff });
     } catch {
       return res.redirect("/");
     }
@@ -274,8 +284,8 @@ app.get("/bot/:id", (req, res) => {
     }
     let owner = db.get("user", bot.ownerID);
     // console.log(bot);
-    if (!bot.isReviewed && !db.has("staff", u.id)) return res.redirect("/");
-    return res.render("bot.ejs", { u: u, bot: bot, owner: owner });
+    if (!bot.isReviewed && !isStaff) return res.redirect("/");
+    return res.render("bot.ejs", { u: u, bot: bot, owner: owner, isStaff });
   }
   res.redirect("/");
 });
@@ -411,58 +421,33 @@ app.get("/webinterface", (req, res) => {
   if (!u) return res.redirect("/");
   let r = "user";
   if (!db.has("staff", tokens[getcookie(cookies, "token")].id)) {
-    r = "user";
-  } else {
-    r = db.get("staff", tokens[getcookie(cookies, "token")].id);
+    res.redirect("/")
   }
-  res.render("webi.ejs", { u: u, role: r });
+  let _bots = db.get("bots");
+  let bots = [];
+  for(_bot in _bots) {
+    let __bot = _bots[_bot];
+    __bot.id = _bot;
+    if(!__bot.isReviewed)
+      bots.push(__bot);
+  }
+  res.render("webi.ejs", { u: u, bots });
 });
 
-app.delete("/api/bot/:id", (req, res) => {
+app.get("/review/:id", (req, res) => {
   cookies = getcookies(req);
-  if (
-    getcookie(cookies, "token") &&
-    db.has("tokens", getcookie(cookies, "token")) &&
-    db.has("bots", req.params.id) &&
-    db.get("bots", req.params.id).ownerID ==
-      db.get("tokens", getcookie(cookies, "token")).id
-  ) {
-    db.delete("bots", req.params.id);
-  }
-});
-
-app.get("/api/review/:id", (req, res) => {
+  let u = undefined;
   users = db.get("user");
-  cookies = getcookies(req);
   tokens = db.get("tokens");
   u = tokens[getcookie(cookies, "token")]?.id;
-  if (u && db.has("staff", u)) {
+  console.log(u)
+  if(!u) return res.redirect("/login");
+  if (db.has("staff", u))
     if (db.has("bots", req.params.id)) {
       review(req.params.id);
-      res.status(200).json({ success: true, msg: "", status: 200 });
+      return res.redirect("/bot/"+req.params.id);
     }
-    res.status(404).json({ success: false, msg: "Bot not found", status: 404 });
-  } else {
-    res.status(403).json({ success: false, msg: "Forbidden", status: 403 });
-  }
-});
-
-app.get("/api/exec/:cmd", async (req, res) => {
-  cookies = getcookies(req);
-  if (
-    getcookie(cookies, "token") &&
-    config.mods.lastIndexOf(db.get("tokens", getcookie(cookies, "token"))?.id) >
-      -1
-  ) {
-    try {
-      out = await eval(req.params.cmd);
-      res.json({ success: true, res: JSON.stringify(out) });
-    } catch {
-      res.json({ success: false, res: "" });
-    }
-  } else {
-    return res.status(403).json({ error: "forbidden" });
-  }
+  res.redirect("/");
 });
 
 app.listen(config.PORT, () => {

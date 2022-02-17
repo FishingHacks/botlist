@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>userlist</title>
+    <link rel="stylesheet" href="/dark.css" id="css_mode" />
+    <script src="/library/index.js"></script>
+    <style>
+      .edit-form > input,
+      .edit-form > textarea {
+        padding: 5px;
+        border: 1px var(--textcol) solid;
+        background-color: rgba(0, 0, 0, 0);
+        color: #00b4cc;
+        border-radius: 3px;
+        margin-bottom: 3px;
+      }
+      .error.show {
+        color: white;
+        background-color: red;
+        width: 80vw;
+        margin-left: 25px;
+        padding: 3px;
+        border: red 0px solid;
+        border-radius: 3px;
+      }
+    </style>
+    <script>
+      async function submit() {
+          if(!document.getElementById("id").value) {
+            document.getElementsByClassName("error")[0].textContent =
+            "Error: No ID specified";
+            document.getElementsByClassName("error")[0].classList.add("show")
+            window.scrollTo(0,0)
+            return;
+          }
+        b = {
+          name: document.getElementById("name").value,
+          description: document
+            .getElementById("description")
+            .value.replaceAll("\n", "<br />")
+            .replaceAll("\r", ""),
+          website: document.getElementById("website").value,
+          invite: document.getElementById("invite").value,
+          headline: document
+            .getElementById("headline")
+            .value.replaceAll("\n", "<br />")
+            .replaceAll("\r", ""),
+          tags: document.getElementById("tags").value.split(","),
+          prefix: document.getElementById("prefix").value,
+          discordServer: document.getElementById("discordServer").value,
+          avatar: document.getElementById("avatar").value,
+        };
+        let token = await cookieStore.get("token");
+        val = await fetch(
+          `http://localhost/bots/add/${
+            document.getElementById("id").value
+          }?token=${token?.value}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            redirect: "follow",
+            body: JSON.stringify(b),
+          }
+        ).then((data) => data.json());
+        if (val.error) {
+          document.getElementsByClassName("error")[0].textContent =
+            "Error: " + val.error;
+            document.getElementsByClassName("error")[0].classList.add("show")
+            document.getElementsByClassName("error")[0].focus();
+            window.scrollTo(0,0)
+        } else {
+          location.href = location.origin + "/";
+        }
+      }
+    </script>
+  </head>
+  <body onload="load()" style="width: 100vw; height: 100vh; position: absolute">
+    <%- include('header.ejs', {user: u}) %>
+    <div class="content">
+      <p class="error"></p>
+      <div
+        class="edit-form"
+        style="color: var(--textcol); margin-top: 30px; margin-left: 25px"
+      >
+        <label for="id"
+          >ID: <% for(let i = 0; i < 15; i++) {%> &nbsp;<%} %></label
+        >
+        <input type="text" name="id" id="id" required style="width: 97vw" />
+        <br />
+        <label for="name">Name: </label>
+        <input type="text" name="name" id="name" required style="width: 97vw" />
+        <br />
+        <label for="headline">Headline: </label>
+        <textarea
+          name="headline"
+          id="headline"
+          required
+          style="width: 97vw; height: 100px"
+        ></textarea>
+        <br />
+        <label for="description">Description: </label>
+        <textarea
+          name="description"
+          id="description"
+          required
+          style="width: 97vw; height: 100px"
+        ></textarea>
+        <br />
+        <label for="website">Website: </label>
+        <input
+          type="tel"
+          name="website"
+          id="website"
+          required
+          style="width: 97vw"
+        />
+        <br />
+        <label for="invite">Bot-Invite: </label>
+        <input
+          type="text"
+          name="invite"
+          id="invite"
+          required
+          style="width: 97vw"
+        />
+        <br />
+        <label for="discordServer">Support Server: </label>
+        <input
+          type="text"
+          name="discordServer"
+          id="discordServer"
+          required
+          style="width: 97vw"
+        />
+        <br />
+        <label for="prefix">Prefix: </label>
+        <input
+          type="text"
+          name="prefix"
+          id="prefix"
+          required
+          style="width: 97vw"
+        />
+        <br />
+        <label for="avatar">Avatar-Link</label>
+        <input
+          type="text"
+          name="avatar"
+          id="avatar"
+          required
+          style="width: 97vw"
+        />
+        <br />
+        <label for="tags">Tags (Comma between the tags): </label>
+        <input type="text" name="tags" id="tags" required style="width: 97vw" />
+        <br />
+        <br />
+        <a class="primary" onclick="submit();">Submit</a>
+        <!-- <input type="hidden" name="csrf_tok" value="<%= //csrf %>"> -->
+      </div>
+    </div>
+    <%- include('footer.ejs', {user: u}) %>
+  </body>
+</html>

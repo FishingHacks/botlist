@@ -50,6 +50,10 @@
         .bot_t>* {
             display: inline;
         }
+
+        .hl1 {
+            white-space: pre;
+        }
     </style>
     <script>
         function gotoBot(id) {
@@ -62,9 +66,8 @@
     <% bots.forEach(element => { if(element.isReviewed) { %>
         <div class="bot" onclick="gotoBot('<%= element.id %>')">
         <b style="color: var(--textcol);"><a href="/bot/<%= element.id%>" style="color: var(--textcol)"><img src="<%= element.avatar %>" class="big-avatar"/><%= element.name %></a></b>
-        <p style="font-size: small;"><%= element.headline %></p>
         <div class="bot_t">
-        <p>Tags: <%= element.tags.join(", ") %></p>
+        <p style="font-size: small;" class="hl1"><%= element.headline.replaceAll("<br />", "\n") %></p>
         <p class="votes">Votes: <%= element.votes %></p>
     </div></div>
    <% }}); %>
