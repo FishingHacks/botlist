@@ -202,6 +202,19 @@ app.get("/bot/:id/edit", (req, res) => {
   res.render("bot.edit.ejs", {u, bot})
 });
 
+app.get("/bot/:id/delete", (req, res) => {
+  cookies = getcookies(req);
+  let u = undefined;
+  user = db.get("user");
+  tokens = db.get("tokens");
+  u = user[tokens[getcookie(cookies, "token")]?.id];
+  let bot = db.get("bots", req.params.id);
+  if(!bot) return res.redirect("/");
+  if(bot.ownerID != u?.id) return res.redirect("/bot/"+req.params.id);
+  db.delete("bots", req.params.id);
+  res.redirect("/");
+});
+
 app.get("/bot/:id/edit_submit", (req, res) => {
   cookies = getcookies(req);
   let u = undefined;

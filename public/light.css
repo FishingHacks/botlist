@@ -12,7 +12,7 @@ body {
     overflow-x: hidden;
 }
 
-a:not(.navlink):not(.primary) {
+a:not(.navlink):not(.primary):not(.danger) {
     color: var(--linkcol);
     text-decoration: none;
     background-image: linear-gradient(90deg, red, blue);
@@ -22,7 +22,7 @@ a:not(.navlink):not(.primary) {
     transition: background-size 500ms ease-in-out;
 }
 
-a:not(.navlink):not(.primary):hover, a:not(.navlink):not(.primary):focus {
+a:not(.navlink):not(.primary):not(.danger):hover, a:not(.navlink):not(.primary):not(.danger):focus {
     background-size: 100% 8%;
 }
 
@@ -63,6 +63,31 @@ h1, h2, h3, h4, h5, h6 {
 
 .primary:active {
     background-color: #438845;
+    transform: translateY(-6px);
+}
+
+.danger {
+    cursor: pointer;
+    background-color: #eee;
+    /* Green */
+    border: 2px solid #DC3545;
+    color: var(--textcol);
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 17px;
+    border-radius: 5px;
+    transform: translateY(-8px);
+}
+
+.danger:hover {
+    background-color: #DC3545;
+    transform: translateY(-7px);
+}
+
+.danger:active {
+    background-color: #DC3545;
     transform: translateY(-6px);
 }
 

@@ -41,6 +41,7 @@
         <div class="card"><h3><%= bot.description %></h3></div>
         <% if(bot.ownerID == u?.id) { %>
             <a href="/bot/<%= bot.id %>/edit" class="primary __primary">edit bot</a>
+            <a href="/bot/<%= bot.id %>/delete" class="danger __primary">Delete bot</a>
         <% } %>
     </div>
     <style>
