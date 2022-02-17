@@ -190,6 +190,45 @@ app.get("/logout", (req, res) => {
   res.redirect("/");
 });
 
+app.get("/bot/:id/edit", (req, res) => {
+  cookies = getcookies(req);
+  let u = undefined;
+  user = db.get("user");
+  tokens = db.get("tokens");
+  u = user[tokens[getcookie(cookies, "token")]?.id];
+  let bot = db.get("bots", req.params.id);
+  if(!bot) return res.redirect("/");
+  if(bot.ownerID != u?.id) return res.redirect("/bot/"+req.params.id);
+  res.render("bot.edit.ejs", {u, bot})
+});
+
+app.get("/bot/:id/edit_submit", (req, res) => {
+  cookies = getcookies(req);
+  let u = undefined;
+  user = db.get("user");
+  tokens = db.get("tokens");
+  u = user[tokens[getcookie(cookies, "token")]?.id];
+  let bot = db.get("bots", req.params.id);
+  if(!bot) return res.redirect("/");
+  if(bot.ownerID != u.id) return res.redirect("/bot/"+req.params.id);
+  params = req.query;
+  let _bot = botobj.fromJSON(bot);
+  const {name, headline, description, website, invite, discordServer, prefix, avatar, tags} = req.query;
+  if(name && headline && description && website && invite && discordServer && prefix && avatar && tags/* && discordServer.startsWith("https://discord.gg/")*/) {
+    _bot.name=name;
+    _bot.headline=headline;
+    _bot.description=description;
+    _bot.website=website;
+    _bot.invite=invite;
+    _bot.discordServer=discordServer;
+    _bot.prefix=prefix;
+    _bot.avatar=avatar;
+    _bot.tags=tags.split(",");
+  }
+  db.set("bots", _bot.toJSON(), req.params.id);
+  res.redirect("/bot/"+req.params.id);
+});
+
 app.get("/bot/:id", (req, res) => {
   cookies = getcookies(req);
   let u = undefined;
@@ -224,6 +263,32 @@ app.get("/bot/:id", (req, res) => {
   }
   res.redirect("/");
 });
+
+app.get("/user/edit", (req, res) => {
+  cookies = getcookies(req);
+  let u = undefined;
+  user = db.get("user");
+  tokens = db.get("tokens");
+  u = user[tokens[getcookie(cookies, "token")]?.id];
+  if(!u) return res.redirect("/");
+  res.render("user.edit.ejs", {u});
+})
+
+app.get("/user/edit_submit", (req, res) => {
+  cookies = getcookies(req);
+  let u = undefined;
+  user = db.get("user");
+  tokens = db.get("tokens");
+  u = user[tokens[getcookie(cookies, "token")]?.id];
+  if(!u) return res.redirect("/");
+  let {bio} = req.query;
+  if(!bio) return res.redirect("/user/"+u.id);
+  bio=bio.replaceAll("\n", "<br />").replaceAll('"', '\\\"');
+  console.log(bio)
+  u.bio=bio;
+  db.set("user", u, u.id);
+  return res.redirect("/user/"+u.id);
+})
 
 app.get("/user/:id", (req, res) => {
   if (!db.has("user", req.params.id))
@@ -388,7 +453,10 @@ app.listen(config.PORT, () => {
   console.log("Botlist is listening on http://localhost:" + config.PORT);
 });
 
-//webinterface admin eval functins
+//-------------------------------------
+
+//webinterface admin eval functions
+
 function getUsers() {
   return db.get("user");
 }
@@ -424,3 +492,32 @@ function review(id) {
   bot.review();
   db.set("bots", bot.toJSON(), id);
 }
+
+// ---------------------------------------
+
+app.get("/api/bot/:id", (req, res) => {
+  if(!db.get("bots", req.params.id)) return res.status(404).json({error: "Bot not found", code: 404});
+  const vurls = getVURLs();
+  let _v = "";
+  for(v in vurls) {
+    if(vurls[v]==req.params.id) (_v = v);
+  }
+  res.status(200).json({code: 200, body: db.get("bots", req.params.id), vanity: _v})
+});
+
+app.get("/api/user/:id", (req, res) => {
+  if(!db.get("user", req.params.id)) return res.status(404).json({error: "User not found", code: 404});
+  let user = db.get("user", req.params.id);
+  let bots = user.bots;
+  let nb = [];
+  bots.forEach(el=>{
+    if(getBot(el)) nb.push(el);
+  })
+  user.bots=nb;
+  db.set("user", user, req.params.id);
+  res.status(200).json({code: 200, body: db.get("user", req.params.id)});
+})
+
+app.use((req, res) => {
+  res.render("e404.ejs", {botname: "Botlist"});
+})

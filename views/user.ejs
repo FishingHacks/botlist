@@ -24,8 +24,18 @@ function getBots() {
     <title>userlist</title>
     <link rel="stylesheet" href="/dark.css" id="css_mode">
     <script src="/library/index.js"></script>
+    <script>
+        function _load() {
+            fetch(location.origin+"/api/user/<%= user.id %>");
+            const bio = purify("<%- user.bio.split('\r').join('') %>");
+            const bots = purify("Bots: <%- getBots().replaceAll('"', '\\"') %>");
+            document.getElementsByClassName("bio")[0].innerHTML=bio;
+            document.getElementsByClassName("bots")[0].innerHTML=bots;
+        }
+    </script>
 </head>
 <body onload="load()" style="width: 100vw; height: 100vh; position: absolute;">
+    <%- include('header.ejs', {user: u}) %>
     <% function getTags() {
         tags = "";
         user.tags.forEach(el => {
@@ -34,11 +44,10 @@ function getBots() {
         tags = tags.substring(0, tags.length - 2);
         return tags;
     } %>
-    <%- include('header.ejs', {user: u}) %>
     <div class="content">
         <h1 class="name"><img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.webp?size=32" alt="avatar" class="big-avatar"><%= user.name %></h1>
-        <div class="card"><h3><%= user.bio %></h3></div>
-        <h4>Bots: <%- getBots() %></h4>
+        <div class="card"><h3 class="bio">BIO</h3></div>
+        <h4 class="bots"></h4>
         <div class="badges">
             <h2>Badges: </h2>
         <% user.badges.forEach(el => { %>

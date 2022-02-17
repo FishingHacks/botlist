@@ -12,6 +12,45 @@
         function gotoBot(id) {
             location.href=location.origin+"/bot/"+id;
         }
+
+        function _load() {
+            let bots = [
+                <% bots.forEach(element => { %>
+                {
+                    name: purify("<%- makeBold(element.name).replaceAll('"', '\\"') %>"),
+                    headline: purify("<%- makeBold(element.headline).replaceAll('"', '\\"') %>"),
+                    tags: purify("Tags: <%- makeBold(element.tags.join(', ')).replaceAll('"', '\\"') %>"),
+                    id: purify("<%= element.id %>"),
+                    avatar: purify("<%- element.avatar %>"),
+                },
+                <%}); %>
+            ];
+
+            bots.forEach(el=> {
+                let el1 = document.createElement("div");
+                el1.classList.add("bot");
+                el1.setAttribute("onclick", "gotoBot('" + el.id + "')");
+                //----------------------------------------------
+                let el2 = document.createElement("a")
+                el2.setAttribute("href", `/bot/${el.id}`);
+                let el3 = document.createElement("img");
+                el3.setAttribute("src", el.avatar)
+                el3.classList.add("big-avatar");
+                el2.append(el3);
+                el2.innerHTML+=el.name;
+                el1.append(el2);
+                //-----------------------
+                let el4 = document.createElement("p");
+                el4.setAttribute("style", "font-size: small;");
+                el4.innerHTML=el.headline;
+                el1.append(el4);
+                //---------------------------
+                let el5 = document.createElement("p");
+                el5.innerHTML=el.tags;
+                el1.append(el5)
+                document.getElementsByClassName("content")[0]?.append(el1);
+            })
+        }
     </script>
     <style>
         .bot {
@@ -42,13 +81,6 @@
 <body onload="load()" style="width: 100vw; height: 100vh; position: absolute;">
     <%- include('header.ejs', {user: u}) %>
     <div class="content">
-        <% bots.forEach(element => { if(element.isReviewed) { %>
-            <div class="bot" onclick="gotoBot('<%= element.id %>')">
-            <a href="/bot/<%= element.id%>"><img src="<%= element.avatar %>" class="big-avatar"/><%- makeBold(element.name, q) %></a>
-            <p style="font-size: small;"><%- makeBold(element.headline, q); %></p>
-            <p>Tags: <%- makeBold(element.tags.join(", "), q) %></p>
-        </div>
-       <% }}); %>
     </div>
     <%- include('footer.ejs', {user: u}) %>
 </body>

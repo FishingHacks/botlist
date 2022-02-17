@@ -7,6 +7,12 @@
     <title>Botlist</title>
     <link rel="stylesheet" href="/dark.css" id="css_mode">
     <script src="/library/index.js"></script>
+    <script>
+        function _load() {
+            const tags=purify("Tags: <%- getTags().replaceAll('"', '\\"') %>");
+            document.getElementsByClassName("tags")[0].innerHTML=tags;
+        }
+    </script>
 </head>
 <body onload="load()" style="width: 100vw; height: 100vh; position: absolute;">
     <% function getTags() {
@@ -25,14 +31,15 @@
             <a href="<%= bot.invite %>" class="primary">Invite <%= bot.name %></a>
             <a href="<%= bot.discordServer %>" class="primary">Support Server</a>
             <h4>Prefix: <%= bot.prefix %></h4>
-            <h4>Tags: <%- getTags() %></h4>
-            <h4>Author: <a href="/user/<%= owner.id %>"><%= owner.name %></a></h4>
+            <h4 class="tags"></h4>
+            <h4>Author: <a href="/user/<%= owner.id %>" style="background: var(--acc); padding: 2px; border: 1px solid var(--acc); border-radius: 5px;"><%= owner.name %><% owner.badges.forEach(el => { %><img src="<%= el.src %>" alt="<%= el.name %>" class="badge" id="<%= el.name %>" style="width: 20px;height: 20px;transform: translateY(5px);">
+            <% }); %></a></h4>
         </div>
         <h1 class="name"><img src="<%= bot.avatar %>" class="big-avatar"/><%= bot.name %></h1>
         <div class="card"><h3><%= bot.headline %></h3></div>
         <div class="spacer"></div>
         <div class="card"><h3><%= bot.description %></h3></div>
-        <% if(bot.ownerID == u.id) { %>
+        <% if(bot.ownerID == u?.id) { %>
             <a href="/bot/<%= bot.id %>/edit" class="primary __primary">edit bot</a>
         <% } %>
     </div>

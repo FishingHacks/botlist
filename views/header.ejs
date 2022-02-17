@@ -1,12 +1,22 @@
 <script src="/index.js"></script>
 <script src="/fontawesome.min.js"></script>
+<script type="text/javascript" src="/dist/purify.js"></script>
 <script>
+    function purify(text) {
+      return DOMPurify.sanitize(text);
+    }
     function search() {
         location.href=location.origin + "/search?q=" + encodeURIComponent(document.getElementsByClassName("searchTerm")[0].value);
     }
 
     function loadHeader() {
-        document.getElementsByClassName("searchTerm")[0].addEventListener("keypress", ({keyCode})=>{if(keyCode==13){search();}})
+      document.getElementsByClassName("logout")[0]?.addEventListener("mouseenter", ()=>{
+        document.getElementsByClassName("dropdown-user")[0]?.classList.add("hover")
+      })
+      document.getElementsByClassName("logout")[0]?.addEventListener("mouseleave", ()=>{
+        document.getElementsByClassName("dropdown-user")[0]?.classList.remove("hover")
+      })
+      document.getElementsByClassName("searchTerm")[0].addEventListener("keypress", ({keyCode})=>{if(keyCode==13){search();}})
     }
 </script>
 <style>
@@ -86,6 +96,30 @@
     z-index: 9999;
     padding-bottom: 20px;
   }
+
+  .logout {
+    cursor: pointer;
+    z-index: 99999;
+  }
+
+  .dropdown-user {
+    background-color: #ffffff;
+    padding: 20px;
+    display: none;
+    border-radius: 10px;
+    border: 1px solid var(--acc);
+    transform: translateY(-10px);
+    z-index: 0;
+  }
+
+  .dropdown-user>* {
+    padding-top: 5px;
+  }
+
+  .dropdown-user.hover, .dropdown-user:hover {
+    display: flex;
+    flex-direction: column;
+  }
 </style>
 <nav class="navbar">
   <h1>Botlist</h1>
@@ -149,12 +183,16 @@
   <ul>
     <% if (user!=null&&user!=undefined) {%>
     <li class="navitem">
-      <a href="/logout" class="primary logout"
-        ><p class="u_d">
+      <a class="primary logout">
+        <p class="u_d">
           <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.webp?size=32" alt="avatar" class="avatar" /><%=
           user.name %>#<%= user.discriminator %>
-        </p></a
-      >
+        </p>
+      </a>
+      <div class="dropdown-user">
+        <a href="/user/edit">Edit Profile</a>
+        <a href="/logout">Logout</a>
+      </div>
     </li>
     <% } else { %>
     <li class="navitem"><a href="/login" class="primary">Sign up</a></li>
