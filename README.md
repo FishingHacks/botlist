@@ -1,4 +1,4 @@
 # Botlist
 ----
 
-I world consider not using it, i know from 3+ Cross-site-scripting exploits and Cross-site-request-forgery (Deleting, editing bots)
+There are cross site request forgery (csrf) attacks possible, was until now too lazy to fix them
