@@ -5,7 +5,6 @@ let config = require("./config/config");
 const ejs = require("ejs");
 const Enmap = require("enmap");
 const app = express();
-const api = express();
 const { fetch } = require("cross-fetch");
 var bodyParser = require("body-parser");
 const { type, redirect } = require("express/lib/response");
@@ -98,7 +97,6 @@ config.mods.forEach((el) => {
 app.use(bodyParser.json());
 app.set("view engine", ejs);
 app.use(express.static("public"));
-app.use("/api", api);
 
 function getcookies(req) {
   var cookie = req.headers.cookie;
@@ -260,7 +258,7 @@ app.get("/bot/:id", (req, res) => {
   user = db.get("user");
   tokens = db.get("tokens");
   u = user[tokens[getcookie(cookies, "token")]?.id];
-  let isStaff = Boolean(db.has("staff", u.id));
+  let isStaff = Boolean(db.has("staff", u?.id)&&u);
   if (db.has("vurls", req.params.id)) {
     try {
       let bot = botobj.fromJSON(db.get("bots", db.get("vurls", req.params.id)));

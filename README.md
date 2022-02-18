@@ -1,6 +1,8 @@
 # Botlist
 ----
 
+I dont know how, but users without permission can review, edit and delete bots. Help needed
+
 There are cross site request forgery (csrf) attacks possible, was until now too lazy to fix them
 
 # Homepage
